@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### React ###
+node_modules/
+src/main/resources/static/built/
