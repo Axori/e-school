@@ -11,8 +11,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class User {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
@@ -20,14 +18,15 @@ public class User {
     private @Id
     @GeneratedValue
     Long id;
-    private Role role;
     private String username;
     @JsonIgnore
     private String password;
     private String firstName;
     private String lastName;
+    private Role role;
 
-    public User(String username, String password, String firstName, String lastName, Role role) {
+    public User(Long id, String username, String password, String firstName, String lastName, Role role) {
+        this.id = id;
         this.role = role;
         this.username = username;
         this.setPassword(password);
@@ -35,14 +34,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public void setPassword(String password) {
-        this.password = PASSWORD_ENCODER.encode(password);
+    protected User() {
+
     }
 
-    public static class UserBuilder {
-        public UserBuilder password(String password) {
-            this.password = PASSWORD_ENCODER.encode(password);
-            return this;
-        }
+    public void setPassword(String password) {
+        this.password = PASSWORD_ENCODER.encode(password);
     }
 }
