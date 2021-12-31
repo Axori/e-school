@@ -1,9 +1,6 @@
 package com.ztp.eschool.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Student {
     private @Id
     @GeneratedValue
@@ -22,8 +20,9 @@ public class Student {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "groupClassId")
     private GroupClass groupClass;
 
-    @OneToMany
+    @OneToMany(mappedBy = "student")
     private List<Mark> marks;
 }
