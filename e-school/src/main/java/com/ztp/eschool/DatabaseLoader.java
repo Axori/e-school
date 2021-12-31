@@ -30,7 +30,7 @@ public class DatabaseLoader implements CommandLineRunner {
                 .build();
         User tabdaw = User.builder()
                 .username("tabdaw")
-                .password("P@ssw0rd")
+                .password("123")
                 .firstName("Dawid")
                 .lastName("Taborski")
                 .role(Role.STUDENT)
