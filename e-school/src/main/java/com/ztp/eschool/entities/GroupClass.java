@@ -21,7 +21,7 @@ public class GroupClass {
     @OneToMany(mappedBy = "groupClass")
     private List<Student> students;
 
-    @OneToMany(mappedBy = "groupClass", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "groupClass")
     private List<Subject> subjects;
 
     @ManyToOne
