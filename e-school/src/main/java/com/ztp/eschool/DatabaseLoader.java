@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,8 +53,9 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     private List<GroupClass> createGroupClass(List<Teacher> teachers) {
+        AtomicInteger i = new AtomicInteger();
         return teachers.stream().map(teacher -> {
-            GroupClass groupClass = GroupClass.builder().name("Group " + teacher.getUser().getFirstName()).teacher(teacher).build();
+            GroupClass groupClass = GroupClass.builder().name("Group " + i.incrementAndGet()).teacher(teacher).build();
             return groupClassRepository.save(groupClass);
         }).collect(Collectors.toList());
     }
