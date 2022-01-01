@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 @Component
 @Profile("dev")
@@ -22,13 +23,15 @@ public class DatabaseLoader implements CommandLineRunner {
     private final StudentRepository studentRepository;
     private final GroupClassRepository groupClassRepository;
     private final SubjectRepository subjectRepository;
+    private final MarkRepository markRepository;
 
-    public DatabaseLoader(UserRepository userRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, GroupClassRepository groupClassRepository, SubjectRepository subjectRepository) {
+    public DatabaseLoader(UserRepository userRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, GroupClassRepository groupClassRepository, SubjectRepository subjectRepository, MarkRepository markRepository) {
         this.userRepository = userRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.groupClassRepository = groupClassRepository;
         this.subjectRepository = subjectRepository;
+        this.markRepository = markRepository;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class DatabaseLoader implements CommandLineRunner {
         }).collect(Collectors.toList());
     }
 
-    private List<Student> createStudents(List<GroupClass> groupClasses, int numberOfStudents) {
+    private List<Student> createStudentsWithMarks(List<GroupClass> groupClasses, int numberOfStudents) {
 
         return IntStream.rangeClosed(1, numberOfStudents)
                 .boxed().map((id) -> {
@@ -72,9 +75,15 @@ public class DatabaseLoader implements CommandLineRunner {
                             .role(Role.STUDENT)
                             .build();
                     int index = (id % groupClasses.size());
-                    Student student = Student.builder().user(user).groupClass(groupClasses.get(index)).build();
+                    GroupClass groupClass = groupClasses.get(index);
+                    Student student = Student.builder().user(user).groupClass(groupClass).build();
 
-                    return studentRepository.save(student);
+                    Student savedStudent = studentRepository.save(student);
+                    groupClass.getSubjects().forEach(subject -> {
+                        markRepository.save(Mark.builder().student(student).subject(subject).value(5).build());
+                        markRepository.save(Mark.builder().student(student).subject(subject).value(4).build());
+                    });
+                    return savedStudent;
                 }).collect(Collectors.toList());
     }
 
@@ -99,15 +108,15 @@ public class DatabaseLoader implements CommandLineRunner {
         List<Teacher> teachers = this.createTeachers(2);
         List<GroupClass> groupClasses = this.createGroupClass(teachers);
         this.createSubjects(groupClasses);
-        this.createStudents(groupClasses, 6);
+        this.createStudentsWithMarks(groupClasses, 6);
     }
 
     private void createSubjects(List<GroupClass> groupClasses) {
         groupClasses.stream().forEach(groupClass -> {
             Subject math = Subject.builder().name("Math").groupClass(groupClass).build();
             Subject geography = Subject.builder().name("Geography").groupClass(groupClass).build();
-
-            subjectRepository.saveAll(Arrays.asList(math, geography));
+            List<Subject> subjects = StreamSupport.stream(subjectRepository.saveAll(Arrays.asList(math, geography)).spliterator(), false).collect(Collectors.toList());
+            groupClass.setSubjects(subjects);
         });
     }
 }
