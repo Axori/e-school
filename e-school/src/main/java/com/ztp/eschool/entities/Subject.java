@@ -18,7 +18,7 @@ public class Subject {
 
     private String name;
 
-    @OneToMany(mappedBy = "subject")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Mark> marks;
 
     @ManyToOne

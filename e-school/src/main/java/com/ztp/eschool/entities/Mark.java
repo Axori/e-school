@@ -19,9 +19,5 @@ public class Mark {
     @JoinColumn(name = "studentId")
     private Student student;
 
-    @ManyToOne
-    @JoinColumn(name = "subjectId")
-    private Subject subject;
-
     private int value;
 }

@@ -23,15 +23,13 @@ public class DatabaseLoader implements CommandLineRunner {
     private final StudentRepository studentRepository;
     private final GroupClassRepository groupClassRepository;
     private final SubjectRepository subjectRepository;
-    private final MarkRepository markRepository;
 
-    public DatabaseLoader(UserRepository userRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, GroupClassRepository groupClassRepository, SubjectRepository subjectRepository, MarkRepository markRepository) {
+    public DatabaseLoader(UserRepository userRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, GroupClassRepository groupClassRepository, SubjectRepository subjectRepository) {
         this.userRepository = userRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.groupClassRepository = groupClassRepository;
         this.subjectRepository = subjectRepository;
-        this.markRepository = markRepository;
     }
 
     @Override
@@ -63,7 +61,7 @@ public class DatabaseLoader implements CommandLineRunner {
         }).collect(Collectors.toList());
     }
 
-    private List<Student> createStudentsWithMarks(List<GroupClass> groupClasses, int numberOfStudents) {
+    private List<Student> createStudents(List<GroupClass> groupClasses, int numberOfStudents) {
 
         return IntStream.rangeClosed(1, numberOfStudents)
                 .boxed().map((id) -> {
@@ -79,10 +77,7 @@ public class DatabaseLoader implements CommandLineRunner {
                     Student student = Student.builder().user(user).groupClass(groupClass).build();
 
                     Student savedStudent = studentRepository.save(student);
-                    groupClass.getSubjects().forEach(subject -> {
-                        markRepository.save(Mark.builder().student(student).subject(subject).value(5).build());
-                        markRepository.save(Mark.builder().student(student).subject(subject).value(4).build());
-                    });
+
                     return savedStudent;
                 }).collect(Collectors.toList());
     }
@@ -108,7 +103,27 @@ public class DatabaseLoader implements CommandLineRunner {
         List<Teacher> teachers = this.createTeachers(2);
         List<GroupClass> groupClasses = this.createGroupClass(teachers);
         this.createSubjects(groupClasses);
-        this.createStudentsWithMarks(groupClasses, 6);
+        List<Student> students = this.createStudents(groupClasses, 6);
+        this.createStudentsMarks(students);
+
+    }
+
+    private void createStudentsMarks(List<Student> students) {
+        students.forEach(student -> {
+            List<Subject> subjects = student.getGroupClass().getSubjects();
+            subjects.forEach(subject -> {
+                Subject savedSubject = subjectRepository.findById(subject.getId()).get();
+                List<Mark> marks = savedSubject.getMarks();
+                marks.add(Mark.builder().student(student).value(3).build());
+                marks.add(Mark.builder().student(student).value(4).build());
+
+                subject.setMarks(marks);
+                subjectRepository.save(subject);
+            });
+
+        });
+
+
     }
 
     private void createSubjects(List<GroupClass> groupClasses) {

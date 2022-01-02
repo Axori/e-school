@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import ItemSelect from "../../components/ItemSelect/ItemSelect";
+import MarksTable from "../../components/MarksTable/MarksTable";
 import client from "../../client";
 
 
@@ -8,6 +9,8 @@ const View = ({user}) => {
     const [selectedGroup, setSelectedGroup] = useState();
     const [subjects, setSubjects] = useState();
     const [selectedSubject, setSelectedSubject] = useState();
+    const [studentsMarks, setStudentsMarks] = useState();
+    const [studentsMarksLoading, setStudentsMarksLoading] = useState(true);
 
     useEffect(() => {
         client({method: 'GET', path: '/api/groupClasses'}).done(
@@ -34,7 +37,7 @@ const View = ({user}) => {
             client({method: 'GET', path: url}).done(
                 (resp) => {
                     const {subjects} = resp.entity._embedded;
-                    const mappedGroups = subjects.map((subject) => {
+                    const mappedSubjects = subjects.map((subject) => {
                         const {
                             name,
                             _links: {self: {href}}
@@ -43,11 +46,31 @@ const View = ({user}) => {
                         return ({value: href, label: name, object: subject});
                     });
 
-                    setSubjects(mappedGroups);
-                    setSelectedSubject(mappedGroups[0]);
+                    setStudentsMarksLoading(true);
+                    setSubjects(mappedSubjects);
+                    setSelectedSubject(mappedSubjects[0]);
                 });
         }
     }, [selectedGroup])
+
+    useEffect(() => {
+        if (selectedSubject) {
+            const newStudentMarks = selectedSubject.object.marks.reduce(
+                (prev, {value, _embedded: {student: {name, id}}}) => {
+                    const oldObject = prev[id];
+                    return {
+                        ...prev,
+                        [id]: {
+                            name,
+                            marks: oldObject ? oldObject.marks.concat([value]) : [value]
+                        }
+                    };
+                }, {});
+
+            setStudentsMarks(newStudentMarks)
+            setStudentsMarksLoading(false);
+        }
+    }, [selectedSubject])
 
 
     const handleOnGroupChange = (newGroup) => {
@@ -57,6 +80,10 @@ const View = ({user}) => {
     const handleOnSubjectChange = (newSubject) => {
         setSelectedSubject(newSubject)
     };
+
+    const handleOnMarksSave = (newMarks) => {
+        console.log("newMarks", newMarks);
+    }
 
     return <>
         <div className="row justify-content-center mt-3">
@@ -68,6 +95,11 @@ const View = ({user}) => {
             <div className="col-lg-6">
                 <ItemSelect id="subjectSelect" options={subjects} onChange={handleOnSubjectChange}
                             selected={selectedSubject}/>
+            </div>
+        </div>
+        <div className="row justify-content-center mt-3">
+            <div className="col-lg-12">
+                <MarksTable loading={studentsMarksLoading} studentMarks={studentsMarks} onSave={handleOnMarksSave}/>
             </div>
         </div>
     </>

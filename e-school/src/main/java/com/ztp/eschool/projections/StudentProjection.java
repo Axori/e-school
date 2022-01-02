@@ -6,6 +6,7 @@ import org.springframework.data.rest.core.config.Projection;
 
 @Projection(name = "StudentProjection", types = Student.class)
 public interface StudentProjection {
+    Long getId();
 
     @Value("#{target.user.toString()}")
     String getName();
