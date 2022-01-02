@@ -17,7 +17,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<View user={user}/>}/>
+                <Route path="/" element={user && <View user={user}/>}/>
             </Routes>
         </BrowserRouter>
     )

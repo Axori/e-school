@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import ItemSelect from "../../components/ItemSelect/ItemSelect";
 import MarksTable from "../../components/MarksTable/MarksTable";
 import client from "../../client";
+import {USER_ROLES} from "../../constants";
 
 
 const View = ({user}) => {
@@ -11,11 +12,17 @@ const View = ({user}) => {
     const [selectedSubject, setSelectedSubject] = useState();
     const [studentsMarks, setStudentsMarks] = useState();
     const [studentsMarksLoading, setStudentsMarksLoading] = useState(true);
+    const isTeacher = user?.role === USER_ROLES.TEACHER;
 
     useEffect(() => {
-        client({method: 'GET', path: '/api/groupClasses'}).done(
+        console.log("isTeacher", isTeacher)
+
+        client({
+            method: 'GET',
+            path: isTeacher ? `/api/groupClasses/search/teacherGroup?id=${user.id}` : '/api/groupClasses'
+        }).done(
             (resp) => {
-                const {groupClasses} = resp.entity._embedded;
+                const groupClasses = isTeacher ? [resp.entity] : resp.entity._embedded.groupClasses;
                 const mappedGroups = groupClasses.map((group) => {
                     const {
                         name: groupName,
@@ -88,7 +95,8 @@ const View = ({user}) => {
     return <>
         <div className="row justify-content-center mt-3">
             <div className="col-lg-6">
-                <ItemSelect id="groupSelect" options={groups} onChange={handleOnGroupChange} selected={selectedGroup}/>
+                <ItemSelect disabled={isTeacher} id="groupSelect" options={groups} onChange={handleOnGroupChange}
+                            selected={selectedGroup}/>
             </div>
         </div>
         <div className="row justify-content-center mt-3">

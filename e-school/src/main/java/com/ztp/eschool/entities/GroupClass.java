@@ -24,7 +24,6 @@ public class GroupClass {
     @OneToMany(mappedBy = "groupClass")
     private List<Subject> subjects;
 
-    @ManyToOne
-    @JoinColumn(name = "teacherId")
+    @OneToOne
     private Teacher teacher;
 }

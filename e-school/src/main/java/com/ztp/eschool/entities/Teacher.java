@@ -3,7 +3,6 @@ package com.ztp.eschool.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
@@ -19,6 +18,6 @@ public class Teacher {
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
-    @OneToMany(mappedBy = "teacher")
-    private List<GroupClass> groupClass;
+    @OneToOne(cascade = CascadeType.ALL)
+    private GroupClass groupClass;
 }
