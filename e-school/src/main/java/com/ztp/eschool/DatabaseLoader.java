@@ -66,7 +66,7 @@ public class DatabaseLoader implements CommandLineRunner {
         return IntStream.rangeClosed(1, numberOfStudents)
                 .boxed().map((id) -> {
                     User user = User.builder()
-                            .username("student")
+                            .username("student" + id)
                             .password("student" + id)
                             .firstName("studentName" + id)
                             .lastName("studentSurname" + id)

@@ -3,7 +3,7 @@ import ItemSelect from "../../components/ItemSelect/ItemSelect";
 import MarksTable from "../../components/MarksTable/MarksTable";
 import client from "../../client";
 import {USER_ROLES} from "../../constants";
-
+import {getGroupClassesUrlByUser} from "../../helpers/urls";
 
 const View = ({user}) => {
     const [groups, setGroups] = useState();
@@ -12,17 +12,14 @@ const View = ({user}) => {
     const [selectedSubject, setSelectedSubject] = useState();
     const [studentsMarks, setStudentsMarks] = useState();
     const [studentsMarksLoading, setStudentsMarksLoading] = useState(true);
-    const isTeacher = user?.role === USER_ROLES.TEACHER;
 
-    useEffect(() => {
-        console.log("isTeacher", isTeacher)
-
+    const fetchAndProcessGroupClasses = () => {
         client({
             method: 'GET',
-            path: isTeacher ? `/api/groupClasses/search/teacherGroup?id=${user.id}` : '/api/groupClasses'
+            path: getGroupClassesUrlByUser(user)
         }).done(
             (resp) => {
-                const groupClasses = isTeacher ? [resp.entity] : resp.entity._embedded.groupClasses;
+                const groupClasses = user.role !== USER_ROLES.ADMIN ? [resp.entity] : resp.entity._embedded.groupClasses;
                 const mappedGroups = groupClasses.map((group) => {
                     const {
                         name: groupName,
@@ -36,6 +33,10 @@ const View = ({user}) => {
                 setGroups(mappedGroups);
                 setSelectedGroup(mappedGroups[0]);
             });
+    }
+
+    useEffect(() => {
+        fetchAndProcessGroupClasses();
     }, []);
 
     useEffect(() => {
@@ -43,6 +44,7 @@ const View = ({user}) => {
             const url = selectedGroup.object._links.subjects.href.split("8080")[1];
             client({method: 'GET', path: url}).done(
                 (resp) => {
+
                     const {subjects} = resp.entity._embedded;
                     const mappedSubjects = subjects.map((subject) => {
                         const {
@@ -62,18 +64,16 @@ const View = ({user}) => {
 
     useEffect(() => {
         if (selectedSubject) {
-            const newStudentMarks = selectedSubject.object.marks.reduce(
-                (prev, {value, _embedded: {student: {name, id}}}) => {
-                    const oldObject = prev[id];
-                    return {
-                        ...prev,
-                        [id]: {
-                            name,
-                            marks: oldObject ? oldObject.marks.concat([value]) : [value]
-                        }
-                    };
-                }, {});
+            const newStudentMarks = selectedGroup.object._embedded.students.reduce((prev, {id, name}) => ({
+                ...prev,
+                [id]: {name, marks: []}
+            }), {})
 
+            selectedSubject.object.marks.forEach(
+                ({value, _embedded: {student: {id}}}) => {
+                    newStudentMarks[id].marks.push(value)
+
+                });
             setStudentsMarks(newStudentMarks)
             setStudentsMarksLoading(false);
         }
@@ -89,13 +89,36 @@ const View = ({user}) => {
     };
 
     const handleOnMarksSave = (newMarks) => {
-        console.log("newMarks", newMarks);
+        const marks = Object.entries(newMarks).map(([studentId, {marks}]) => {
+            return marks.map(mark => ({
+                student: `http://localhost:8080/api/students/${studentId}`, value: mark
+            }))
+        }).reduce((prev, curr) => [...prev, ...curr], []);
+
+        const updatedSubject = {
+            marks
+        }
+
+        client({
+            method: 'PATCH',
+            path: selectedSubject.value,
+            entity: updatedSubject,
+            headers: {'Content-Type': 'application/json'}
+        }).done(() => {
+            setStudentsMarks()
+            setStudentsMarksLoading(true);
+            setSelectedSubject();
+            setSubjects();
+            setSelectedGroup();
+            setGroups();
+            fetchAndProcessGroupClasses();
+        })
     }
 
     return <>
         <div className="row justify-content-center mt-3">
             <div className="col-lg-6">
-                <ItemSelect disabled={isTeacher} id="groupSelect" options={groups} onChange={handleOnGroupChange}
+                <ItemSelect id="groupSelect" options={groups} onChange={handleOnGroupChange}
                             selected={selectedGroup}/>
             </div>
         </div>
@@ -107,7 +130,8 @@ const View = ({user}) => {
         </div>
         <div className="row justify-content-center mt-3">
             <div className="col-lg-12">
-                <MarksTable loading={studentsMarksLoading} studentMarks={studentsMarks} onSave={handleOnMarksSave}/>
+                <MarksTable isStudent={user.role === USER_ROLES.STUDENT} loading={studentsMarksLoading}
+                            studentMarks={studentsMarks} onSave={handleOnMarksSave}/>
             </div>
         </div>
     </>

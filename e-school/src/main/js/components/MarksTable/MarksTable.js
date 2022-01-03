@@ -3,7 +3,7 @@ import {cloneDeep} from "lodash";
 import Loader from "../Loader/Loader";
 import './MarksTable.css';
 
-const MarksTable = ({loading, studentMarks, onSave}) => {
+const MarksTable = ({loading, studentMarks, onSave, isStudent}) => {
     const [studentMarksCopy, setStudentMarksCopy] = useState();
     const [hasChanges, setHasChanges] = useState(false);
     const numberOfMarkColumns = 10;
@@ -59,17 +59,18 @@ const MarksTable = ({loading, studentMarks, onSave}) => {
                         <tr key={id}>
                             <th scope="row">{name}</th>
                             {marks.map((mark, index) =>
-                                <td key={`${name}-mark-${index}`}>
-                                    <input className="MarksTable__input form-control" type="number" min={0} max={6}
-                                           value={mark}
-                                           onChange={handleOnChange(id, index)}/>
+                                <td className="MarksTable__input" key={`${name}-mark-${index}`}>
+                                    {!isStudent ?
+                                        <input className="form-control" type="number" min={0} max={6}
+                                               value={mark}
+                                               onChange={handleOnChange(id, index)}/> : mark}
                                 </td>
                             )}
                         </tr>
                     )}
                     </tbody>
                 </table>
-                {hasChanges && <button className="btn btn-success" onClick={handleOnSave}>Save</button>}
+                {!isStudent && hasChanges && <button className="btn btn-success" onClick={handleOnSave}>Save</button>}
             </div>
             : <Loader/>}
     </div>

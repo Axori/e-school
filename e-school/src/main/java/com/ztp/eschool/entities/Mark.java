@@ -16,7 +16,6 @@ public class Mark {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "studentId")
     private Student student;
 
     private int value;

@@ -18,6 +18,6 @@ public class Teacher {
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private GroupClass groupClass;
 }
