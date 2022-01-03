@@ -1,9 +1,6 @@
 package com.ztp.eschool.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,6 +9,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Mark {
     private @Id
     @GeneratedValue
@@ -19,9 +17,6 @@ public class Mark {
 
     @ManyToOne
     private Student student;
-
-    @ManyToOne
-    private Subject subject;
 
     private int value;
 }

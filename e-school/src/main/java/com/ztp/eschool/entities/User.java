@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Builder
 public class User {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
@@ -34,11 +35,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    protected User() {
-
-    }
-
     public void setPassword(String password) {
         this.password = PASSWORD_ENCODER.encode(password);
+    }
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
     }
 }
