@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select should render select when options are defined 1`] = `
+<select
+  aria-label="Default select example"
+  className="form-select"
+  id="select"
+  onChange={[Function]}
+>
+  <option
+    value="option1"
+  >
+    Option 1
+  </option>
+  <option
+    value="option2"
+  >
+    Option 2
+  </option>
+  <option
+    value="option3"
+  >
+    Option 3
+  </option>
+</select>
+`;

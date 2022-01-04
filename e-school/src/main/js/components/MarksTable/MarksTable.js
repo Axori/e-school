@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {cloneDeep} from "lodash";
 import Loader from "../Loader/Loader";
-import './MarksTable.css';
 
 const MarksTable = ({loading, studentMarks, onSave, isStudent}) => {
     const [studentMarksCopy, setStudentMarksCopy] = useState();
@@ -44,7 +43,7 @@ const MarksTable = ({loading, studentMarks, onSave, isStudent}) => {
             }
         }), {}))
     }
-
+    console.log("loading, marks, marksCopy", studentMarks, studentMarksCopy)
     return <div className="MarksTable d-flex justify-content-center">
         {!loading && studentMarksCopy ? <div className="MarksTable__container">
                 <table id="MarksTable" className="table">
