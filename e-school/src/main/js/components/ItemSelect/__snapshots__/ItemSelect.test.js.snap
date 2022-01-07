@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ItemSelect should render loading when options are undefined 1`] = `
+<div
+  className="d-flex justify-content-center"
+>
+  <div
+    className="spinner-border"
+    role="status"
+  >
+    <span
+      className="visually-hidden"
+    >
+      Loading...
+    </span>
+  </div>
+</div>
+`;
+
+exports[`ItemSelect should render select when options are defined 1`] = `
+<div
+  className="d-flex justify-content-center"
+>
+  <select
+    aria-label="Default select example"
+    className="form-select"
+    id="ItemSelectId"
+    onChange={[Function]}
+  >
+    <option
+      value="option1"
+    >
+      Option 1
+    </option>
+    <option
+      value="option2"
+    >
+      Option 2
+    </option>
+    <option
+      value="option3"
+    >
+      Option 3
+    </option>
+  </select>
+</div>
+`;

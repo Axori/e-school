@@ -1,22 +1,25 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const client = require('./client');
+import React from 'react';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import ReactDOM from 'react-dom';
+import client from './client';
+import {useEffect, useState} from "react";
+import View from "./screens/View/View";
 
 const App = () => {
+    const [user, setUser] = useState();
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {employees: []};
-    // }
-    //
-    // componentDidMount() {
-    //     client({method: 'GET', path: '/api/employees'}).done(response => {
-    //         this.setState({employees: response.entity._embedded.employees});
-    //     });
-    // }
+    useEffect(() => {
+        client({method: 'GET', path: 'api/users/search/me'}).done(loggedUser => {
+            setUser(loggedUser.entity);
+        });
+    }, [])
 
     return (
-        <div>Hello world 1231</div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={user && <View user={user}/>}/>
+            </Routes>
+        </BrowserRouter>
     )
 }
 

@@ -1,0 +1,11 @@
+.MarksTable {
+    overflow: hidden;
+}
+
+.MarksTable__container {
+    overflow: auto;
+}
+
+.MarksTable__input {
+    min-width: 50px;
+}
