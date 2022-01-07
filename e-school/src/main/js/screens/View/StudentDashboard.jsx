@@ -1,12 +1,11 @@
-import React, {useEffect, useState, useContext} from "react";
-import ItemSelect from "../../components/ItemSelect/ItemSelect";
-import MarksTable from "../../components/MarksTable/MarksTable";
+import React, { useState, useEffect, useContext } from 'react'
+import { userContext } from '../../app';
 import client from "../../client";
-import {USER_ROLES} from "../../constants";
-import {getGroupClassesUrlByUser} from "../../helpers/urls";
-import { userContext } from "../../app";
+import ItemSelect from '../../components/ItemSelect/ItemSelect';
+import MarksTable from '../../components/MarksTable/MarksTable';
+import { getGroupClassesUrlByUser } from '../../helpers/urls';
 
-const View = () => {
+const StudentDashboard = () => {
     const [groups, setGroups] = useState();
     const [selectedGroup, setSelectedGroup] = useState();
     const [subjects, setSubjects] = useState();
@@ -91,33 +90,6 @@ const View = () => {
         setSelectedSubject(newSubject)
     };
 
-    const handleOnMarksSave = (newMarks) => {
-        const marks = Object.entries(newMarks).map(([studentId, {marks}]) => {
-            return marks.map(mark => ({
-                student: `http://localhost:8080/api/students/${studentId}`, value: mark
-            }))
-        }).reduce((prev, curr) => [...prev, ...curr], []);
-
-        const updatedSubject = {
-            marks
-        }
-
-        client({
-            method: 'PATCH',
-            path: selectedSubject.value,
-            entity: updatedSubject,
-            headers: {'Content-Type': 'application/json'}
-        }).done(() => {
-            setStudentsMarks()
-            setStudentsMarksLoading(true);
-            setSelectedSubject();
-            setSubjects();
-            setSelectedGroup();
-            setGroups();
-            fetchAndProcessGroupClasses();
-        })
-    }
-
     return <>
         <div className="row justify-content-center mt-3">
             <div className="col-lg-6">
@@ -133,11 +105,11 @@ const View = () => {
         </div>
         <div className="row justify-content-center mt-3">
             <div className="col-lg-12">
-                <MarksTable isStudent={user.role === USER_ROLES.STUDENT} loading={studentsMarksLoading}
-                            studentMarks={studentsMarks} onSave={handleOnMarksSave}/>
+                <MarksTable isStudent={true} loading={studentsMarksLoading}
+                            studentMarks={studentsMarks} onSave={() => {}}/>
             </div>
         </div>
     </>
 }
 
-export default View;
+export default StudentDashboard

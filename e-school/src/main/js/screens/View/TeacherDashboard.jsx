@@ -1,12 +1,11 @@
-import React, {useEffect, useState, useContext} from "react";
-import ItemSelect from "../../components/ItemSelect/ItemSelect";
-import MarksTable from "../../components/MarksTable/MarksTable";
+import React, { useState, useEffect, useContext } from 'react'
+import { userContext } from '../../app';
 import client from "../../client";
-import {USER_ROLES} from "../../constants";
-import {getGroupClassesUrlByUser} from "../../helpers/urls";
-import { userContext } from "../../app";
+import ItemSelect from '../../components/ItemSelect/ItemSelect';
+import MarksTable from '../../components/MarksTable/MarksTable';
+import { getGroupClassesUrlByUser } from '../../helpers/urls';
 
-const View = () => {
+const TeacherDashboard = () => {
     const [groups, setGroups] = useState();
     const [selectedGroup, setSelectedGroup] = useState();
     const [subjects, setSubjects] = useState();
@@ -23,18 +22,21 @@ const View = () => {
         }).done(
             (resp) => {
                 const groupClasses = resp.entity._embedded.groupClasses;
-                const mappedGroups = groupClasses.map((group) => {
-                    const {
-                        name: groupName,
-                        _embedded: {teacher: {name}},
-                        _links: {self: {href}}
-                    } = group;
+                if (groupClasses) {
+                    const mappedGroups = groupClasses.map((group) => {
+                        const {
+                            name: groupName,
+                            _embedded: {teacher: {name}},
+                            _links: {self: {href}}
+                        } = group;
+    
+                        return ({value: href, label: `${name} - ${groupName}`, object: group});
+                    });
+    
+                    setGroups(mappedGroups);
+                    setSelectedGroup(mappedGroups[0]);
 
-                    return ({value: href, label: `${name} - ${groupName}`, object: group});
-                });
-
-                setGroups(mappedGroups);
-                setSelectedGroup(mappedGroups[0]);
+                }
             });
     }
 
@@ -108,12 +110,12 @@ const View = () => {
             entity: updatedSubject,
             headers: {'Content-Type': 'application/json'}
         }).done(() => {
-            setStudentsMarks()
-            setStudentsMarksLoading(true);
-            setSelectedSubject();
-            setSubjects();
-            setSelectedGroup();
-            setGroups();
+            // setStudentsMarks()
+            // setStudentsMarksLoading(true);
+            // setSelectedSubject();
+            // setSubjects();
+            // setSelectedGroup();
+            // setGroups();
             fetchAndProcessGroupClasses();
         })
     }
@@ -133,11 +135,11 @@ const View = () => {
         </div>
         <div className="row justify-content-center mt-3">
             <div className="col-lg-12">
-                <MarksTable isStudent={user.role === USER_ROLES.STUDENT} loading={studentsMarksLoading}
+                <MarksTable isStudent={false} loading={studentsMarksLoading}
                             studentMarks={studentsMarks} onSave={handleOnMarksSave}/>
             </div>
         </div>
     </>
 }
 
-export default View;
+export default TeacherDashboard
