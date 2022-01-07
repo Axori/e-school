@@ -16,7 +16,7 @@ public class HomeController {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "{_:^(?!index\\.html|api).*$}")
     public String index() {
         return "index";
     }
