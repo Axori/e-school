@@ -43,7 +43,7 @@ const MarksTable = ({loading, studentMarks, onSave, isStudent}) => {
             }
         }), {}))
     }
-    console.log("loading, marks, marksCopy", studentMarks, studentMarksCopy)
+
     return <div className="MarksTable d-flex justify-content-center">
         {!loading && studentMarksCopy ? <div className="MarksTable__container">
                 <table id="MarksTable" className="table">
