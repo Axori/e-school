@@ -7,12 +7,10 @@ import View from "./screens/View/View";
 import StudentDashboard from './screens/View/StudentDashboard';
 import TeacherDashboard from './screens/View/TeacherDashboard';
 import AdminDashboard from './screens/View/AdminDashboard';
-import CreateGroup from './containers/CreateGroup';
-
 const userContext = createContext({ user: { role: ""}})
 
 const App = () => {
-    const [user, setUser] = useState({role: ""});
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         client({method: 'GET', path: 'api/users/search/me'}).done(loggedUser => {
@@ -25,10 +23,10 @@ const App = () => {
         <userContext.Provider value={user}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={user && <View/>}/>
-                    <Route path="/student" element={user && <StudentDashboard />}/>
-                    <Route path="/teacher" element={user && <TeacherDashboard />}/>
-                    <Route path="/admin/*" element={user && <AdminDashboard />}/>
+                    <Route path="/" element={user && <View user={user}/>}/>
+                    <Route path="/student" element={user && <StudentDashboard user={user} />}/>
+                    <Route path="/teacher" element={user && <TeacherDashboard user={user} />}/>
+                    <Route path="/admin/*" element={user && <AdminDashboard user={user} />}/>
                 </Routes>
             </BrowserRouter>
         </userContext.Provider>

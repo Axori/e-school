@@ -1,12 +1,11 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, {useEffect, useState} from "react";
 import ItemSelect from "../../components/ItemSelect/ItemSelect";
 import MarksTable from "../../components/MarksTable/MarksTable";
 import client from "../../client";
 import {USER_ROLES} from "../../constants";
 import {getGroupClassesUrlByUser} from "../../helpers/urls";
-import { userContext } from "../../app";
 
-const View = () => {
+const View = ({user}) => {
     const [groups, setGroups] = useState();
     const [selectedGroup, setSelectedGroup] = useState();
     const [subjects, setSubjects] = useState();
@@ -14,7 +13,7 @@ const View = () => {
     const [studentsMarks, setStudentsMarks] = useState();
     const [studentsMarksLoading, setStudentsMarksLoading] = useState(true);
 
-    const user = useContext(userContext)
+    console.log(user)
 
     const fetchAndProcessGroupClasses = () => {
         client({
@@ -22,7 +21,7 @@ const View = () => {
             path: getGroupClassesUrlByUser(user)
         }).done(
             (resp) => {
-                const groupClasses = resp.entity._embedded.groupClasses;
+                const groupClasses = user.role !== USER_ROLES.ADMIN ? [resp.entity] : resp.entity._embedded.groupClasses;
                 const mappedGroups = groupClasses.map((group) => {
                     const {
                         name: groupName,

@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { userContext } from '../../app';
+import React, { useState, useEffect } from 'react'
 import client from "../../client";
 import ItemSelect from '../../components/ItemSelect/ItemSelect';
 import MarksTable from '../../components/MarksTable/MarksTable';
 import { getGroupClassesUrlByUser } from '../../helpers/urls';
 
-const StudentDashboard = () => {
+const StudentDashboard = ({ user }) => {
     const [groups, setGroups] = useState();
     const [selectedGroup, setSelectedGroup] = useState();
     const [subjects, setSubjects] = useState();
@@ -13,15 +12,13 @@ const StudentDashboard = () => {
     const [studentsMarks, setStudentsMarks] = useState();
     const [studentsMarksLoading, setStudentsMarksLoading] = useState(true);
 
-    const user = useContext(userContext)
-
     const fetchAndProcessGroupClasses = () => {
         client({
             method: 'GET',
             path: getGroupClassesUrlByUser(user)
         }).done(
             (resp) => {
-                const groupClasses = resp.entity._embedded.groupClasses;
+                const groupClasses = [resp.entity];
                 const mappedGroups = groupClasses.map((group) => {
                     const {
                         name: groupName,

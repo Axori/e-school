@@ -3,7 +3,7 @@ import client from '../../client'
 import CreateGroup from '../../containers/CreateGroup'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 
-const Dashboard = () => {
+const Dashboard = ({ user }) => {
     const [groups, setGroups] = useState([])
 
     useEffect(() => {
@@ -47,8 +47,6 @@ const Dashboard = () => {
 }
 
 const AdminDashboard = () => {
-    
-
     return (
         <Routes>
             <Route path="" element={<Dashboard />}/>
