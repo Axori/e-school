@@ -36,25 +36,21 @@ const CreateGroup = () => {
     const [groupName, setGroupName] = useState("")
 
     const [teachers, setTeachers] = useState([])
-    const [selectedTeacher, setSelectedTeacher] = useState(null)
+    const [selectedTeacher, setSelectedTeacher] = useState()
 
-    const [studentsList, setStudentsList] = useState([{
-        firstName: "Will",
-        lastName: "Smith"
-    }])
+    const [studentsList, setStudentsList] = useState([])
 
     useEffect(() => {
         client({ method: 'GET', path: `/api/teachers`})
         .then((res) => {
             const { teachers } = res.entity._embedded
             setTeachers(teachers)
-            setSelectedTeacher(teachers)
+            setSelectedTeacher({ 
+                label: teachers[0].name,
+                value: teachers[0]._links.self.href
+            })
         })
     }, [])
-
-    useEffect(() => {
-        console.log(selectedTeacher)
-    }, [selectedTeacher])
 
     const handleOnAddStudent = () => {
         const studentsListCopy = [...studentsList]
@@ -133,7 +129,7 @@ const CreateGroup = () => {
                 <div className="col-lg-6">
                     <label className="form-label">Teacher</label>
                     <ItemSelect id="subjectSelect" options={teachers.map(teacher => ({label: teacher.name, value: teacher._links.self.href}))} onChange={setSelectedTeacher}
-                                selected={null}/>
+                                selected={selectedTeacher}/>
                 </div>
             </div>
 
