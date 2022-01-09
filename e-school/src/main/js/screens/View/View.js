@@ -13,7 +13,6 @@ const View = ({user}) => {
     const [studentsMarks, setStudentsMarks] = useState();
     const [studentsMarksLoading, setStudentsMarksLoading] = useState(true);
 
-    console.log(user)
 
     const fetchAndProcessGroupClasses = () => {
         client({

@@ -110,12 +110,12 @@ const TeacherDashboard = ({ user }) => {
             entity: updatedSubject,
             headers: {'Content-Type': 'application/json'}
         }).done(() => {
-            // setStudentsMarks()
-            // setStudentsMarksLoading(true);
-            // setSelectedSubject();
-            // setSubjects();
-            // setSelectedGroup();
-            // setGroups();
+            setStudentsMarks()
+            setStudentsMarksLoading(true);
+            setSelectedSubject();
+            setSubjects();
+            setSelectedGroup();
+            setGroups();
             fetchAndProcessGroupClasses();
         })
     }
