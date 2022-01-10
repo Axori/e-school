@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import client from '../../client'
 import CreateGroup from '../../containers/CreateGroup'
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Link} from "react-router-dom";
 
 const Dashboard = ({ user }) => {
     const [groups, setGroups] = useState([])
@@ -19,6 +19,8 @@ const Dashboard = ({ user }) => {
     }
 
     return (
+    <>
+        <Link to="create-group">Create group</Link>
         <div>
             <table className="table">
             <thead>
@@ -43,6 +45,8 @@ const Dashboard = ({ user }) => {
             </tbody>
             </table>
         </div>
+        
+        </>
     )
 }
 

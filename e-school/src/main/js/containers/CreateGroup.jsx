@@ -32,11 +32,26 @@ const StudentInput = ({onChange}) => {
     )
 }
 
+const SubjectInput = ({onChange}) => {
+    const [name, setName] = useState("")
+
+    const handleOnChange = (e) => {
+        setName(e.target.value)
+        onChange(e.target.value)
+    }
+
+    return (
+        <input value={name} onChange={handleOnChange} placeholder="Subject's name" className="form-control"  />
+    )
+}
+
 const CreateGroup = () => {
     const [groupName, setGroupName] = useState("")
 
     const [teachers, setTeachers] = useState([])
     const [selectedTeacher, setSelectedTeacher] = useState()
+
+    const [subjects, setSubjects] = useState([])
 
     const [studentsList, setStudentsList] = useState([])
 
@@ -60,6 +75,14 @@ const CreateGroup = () => {
         setStudentsList(studentsListCopy)
     }
 
+    const handleOnAddSubject = () => {
+        const subjectsCopy = [...subjects]
+
+        subjectsCopy.push({})
+
+        setSubjects(subjectsCopy)
+    }
+
     const createUserForStudent = (student) => {
         return client({
             method: 'POST',
@@ -75,42 +98,58 @@ const CreateGroup = () => {
         })
     }
 
-    const createStudent = (userHref) => {
+    const createStudent = (userHref, groupClassHref) => {
         return client({
             method: 'POST',
             path: '/api/students',
             entity: {
-                user: userHref
+                user: userHref,
+                groupClass: groupClassHref
             },
             headers: {'Content-Type': 'application/json'}
         })
+    }
 
+    const createSubject = (name, groupClassHref) => {
+        return client({
+            method: 'POST',
+            path: '/api/subjects',
+            entity: {
+                name,
+                groupClass: groupClassHref
+            },
+            headers: {'Content-Type': 'application/json'}
+        })
     }
 
     const handleOnSave = () => {
-        const studentsPromises = studentsList.map(async student => {
-            return createUserForStudent(student).then(async res => {
+        client({
+            method: 'POST',
+            path: '/api/groupClasses',
+            entity: {
+                name: groupName,
+                teacher: selectedTeacher.value,
+            },
+            headers: {'Content-Type': 'application/json'}
+        }).then((groupClass) => {
+
+            const usersPromises = studentsList
+            .map(async student => {
+                const res = await createUserForStudent(student)
                 const { href } = res.entity._links.self
-
-                return createStudent(href)
+                return await createStudent(href, groupClass.entity._links.self.href)
             })
+
+            const subjectsPromises = subjects.map(async subject => await createSubject(subject, groupClass.entity._links.self.href))
+
+            setStudentsList([])
+            setSubjects([])
+            setGroupName("")
         })
 
-        Promise.all(studentsPromises).then(students => {
+       
 
-            const studentsHrefs = students.map(student => student.entity._links.self.href)
-
-            client({
-                method: 'POST',
-                path: '/api/groupClasses',
-                entity: {
-                    name: groupName,
-                    teacher: selectedTeacher.value,
-                    students: studentsHrefs
-                },
-                headers: {'Content-Type': 'application/json'}
-            })
-        })
+        
     }
 
     return (
@@ -130,6 +169,25 @@ const CreateGroup = () => {
                     <label className="form-label">Teacher</label>
                     <ItemSelect id="subjectSelect" options={teachers.map(teacher => ({label: teacher.name, value: teacher._links.self.href}))} onChange={setSelectedTeacher}
                                 selected={selectedTeacher}/>
+                </div>
+            </div>
+
+            <div className="row justify-content-center mt-3">
+                <div className="col-lg-6">
+                    <label className="form-label">Subjects</label>
+                    <div>
+                        {subjects.map((subject, index) => (
+                            <SubjectInput key={index} onChange={(subject) => {
+                                const subjectsCopy = [...subjects]
+
+                                subjectsCopy[index] = subject
+
+                                setSubjects(subjectsCopy)
+                            }} />
+                        ))}
+                    </div>
+
+                    <button type="button" className="btn btn-primary" onClick={handleOnAddSubject}>Add subject</button>
                 </div>
             </div>
 

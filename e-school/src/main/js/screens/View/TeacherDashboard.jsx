@@ -19,28 +19,22 @@ const TeacherDashboard = ({ user }) => {
             path: getGroupClassesUrlByUser(user)
         }).done(
             (resp) => {
-                const groupClasses = [resp.entity];
-                if (groupClasses) {
-                    const mappedGroups = groupClasses.map((group) => {
-                        const {
-                            name: groupName,
-                            _embedded: {teacher: {name}},
-                            _links: {self: {href}}
-                        } = group;
-    
-                        return ({value: href, label: `${name} - ${groupName}`, object: group});
-                    });
-    
-                    setGroups(mappedGroups);
-                    setSelectedGroup(mappedGroups[0]);
+                const mappedGroups = resp.entity._embedded.groupClasses.map((group) => {
+                    const {
+                        name: groupName,
+                        _embedded: {teacher: {name}},
+                        _links: {self: {href}}
+                    } = group;
 
-                }
+                    return ({value: href, label: `${name} - ${groupName}`, object: group});
+                });
+
+                setGroups(mappedGroups);
+                setSelectedGroup(mappedGroups[0]);
             });
     }
 
     useEffect(() => {
-        console.log(user)
-        if (user)
         fetchAndProcessGroupClasses();
     }, [user]);
 
