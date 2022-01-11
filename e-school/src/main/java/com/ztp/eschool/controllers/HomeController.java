@@ -16,7 +16,7 @@ public class HomeController {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(value = {"/", "/admin/**", "/student/**", "/teacher/**"})
+    @RequestMapping(value = {"/", "/admin/**", "/view/**"})
     public String index() {
         return "index";
     }
