@@ -21,14 +21,14 @@ const App = () => {
         <BrowserRouter>
             {user?.role === USER_ROLES.ADMIN && <nav className="navbar navbar-expand-lg navbar-light">
                 <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
+                    <li className="nav-item">
                         <Link to="view" className="nav-link">View Groups</Link>
                     </li>
-                    <li className="nav-item active">
+                    <li className="nav-item">
                         <Link to="admin" className="nav-link">Admin Panel</Link>
                     </li>
-                    <li className="nav-item active">
-                        <Link to="admin/create-group" className="nav-link">View Groups</Link>
+                    <li className="nav-item">
+                        <Link to="admin/create-group" className="nav-link">Create Groups</Link>
                     </li>
                 </ul>
             </nav>}

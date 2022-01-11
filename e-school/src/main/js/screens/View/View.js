@@ -39,8 +39,7 @@ const View = ({user}) => {
     useEffect(() => {
         fetchAndProcessGroupClasses();
     }, []);
-
-    useEffect(() => {
+    const fetchSubjects = () => {
         if (selectedGroup) {
             const url = selectedGroup.object._links.subjects.href.split("8080")[1];
             client({method: 'GET', path: url}).done(
@@ -61,7 +60,12 @@ const View = ({user}) => {
                     setSelectedSubject(mappedSubjects[0]);
                 });
         }
+    };
+
+    useEffect(() => {
+        fetchSubjects()
     }, [selectedGroup])
+
 
     useEffect(() => {
         if (selectedSubject) {
@@ -108,11 +112,7 @@ const View = ({user}) => {
         }).done(() => {
             setStudentsMarks()
             setStudentsMarksLoading(true);
-            setSelectedSubject();
-            setSubjects();
-            setSelectedGroup();
-            setGroups();
-            fetchAndProcessGroupClasses();
+            fetchSubjects();
         })
     }
 
