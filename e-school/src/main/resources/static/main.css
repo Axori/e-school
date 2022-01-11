@@ -4,6 +4,7 @@
 
 .MarksTable__container {
     overflow: auto;
+    width: 100%;
 }
 
 .MarksTable__input {
