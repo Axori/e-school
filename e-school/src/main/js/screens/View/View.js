@@ -4,6 +4,7 @@ import MarksTable from "../../components/MarksTable/MarksTable";
 import client from "../../client";
 import {USER_ROLES} from "../../constants";
 import {getGroupClassesUrlByUser} from "../../helpers/urls";
+import {getGroupClasses} from "../../helpers/responses";
 
 const View = ({user}) => {
     const [groups, setGroups] = useState();
@@ -20,8 +21,7 @@ const View = ({user}) => {
             path: getGroupClassesUrlByUser(user)
         }).done(
             (resp) => {
-                const groupClasses = user.role !== USER_ROLES.ADMIN ? [resp.entity] : resp.entity._embedded.groupClasses;
-                const mappedGroups = groupClasses.map((group) => {
+                const mappedGroups = getGroupClasses(user, resp).map((group) => {
                     const {
                         name: groupName,
                         _embedded: {teacher: {name}},

@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom';
 import client from './client';
 import {useEffect, useState} from "react";
 import View from "./screens/View/View";
-import StudentDashboard from './screens/View/StudentDashboard';
-import TeacherDashboard from './screens/View/TeacherDashboard';
 import AdminDashboard from './screens/View/AdminDashboard';
 
 const App = () => {
@@ -22,9 +20,7 @@ const App = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={user && <View user={user}/>}/>
-                <Route path="/student" element={user && <StudentDashboard user={user} />}/>
-                <Route path="/teacher" element={user && <TeacherDashboard user={user} />}/>
-                <Route path="/admin/*" element={user && <AdminDashboard user={user} />}/>
+                <Route path="/admin/*" element={user && <AdminDashboard user={user}/>}/>
             </Routes>
         </BrowserRouter>
     )
