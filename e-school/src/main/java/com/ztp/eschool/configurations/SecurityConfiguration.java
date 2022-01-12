@@ -1,6 +1,7 @@
 package com.ztp.eschool.configurations;
 
 import com.ztp.eschool.entities.User;
+import com.ztp.eschool.enums.Role;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,9 +15,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private SpringDataJpaUserDetailsService userDetailsService;
+    private final LoginSuccessHandler loginSuccessHandler;
 
-    public SecurityConfiguration(SpringDataJpaUserDetailsService userDetailsService) {
+    public SecurityConfiguration(SpringDataJpaUserDetailsService userDetailsService, LoginSuccessHandler loginSuccessHandler) {
         this.userDetailsService = userDetailsService;
+        this.loginSuccessHandler = loginSuccessHandler;
     }
 
     @Override
@@ -31,10 +34,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/built/**", "/main.css").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .defaultSuccessUrl("/", true)
+                .successHandler(loginSuccessHandler)
                 .permitAll()
                 .and()
                 .httpBasic()

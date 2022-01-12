@@ -17,7 +17,4 @@ public class Teacher {
 
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
-
-    @OneToOne
-    private GroupClass groupClass;
 }
