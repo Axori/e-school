@@ -19,18 +19,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 
         SpringDataJpaUserDetails userDetails = (SpringDataJpaUserDetails) authentication.getPrincipal();
 
-        String redirectURL = request.getContextPath();
-
-        if (userDetails.hasRole(Role.STUDENT)) {
-            redirectURL = "student";
-        } else if (userDetails.hasRole(Role.ADMIN)) {
-            redirectURL = "admin";
-        } else if (userDetails.hasRole(Role.TEACHER)) {
-            redirectURL = "teacher";
-        }
-
-        response.sendRedirect(redirectURL);
-
+        response.sendRedirect(userDetails.hasRole(Role.ADMIN) ? "admin" : "view");
     }
 
 }

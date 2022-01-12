@@ -4,6 +4,7 @@ import MarksTable from "../../components/MarksTable/MarksTable";
 import client from "../../client";
 import {USER_ROLES} from "../../constants";
 import {getGroupClassesUrlByUser} from "../../helpers/urls";
+import {getGroupClasses} from "../../helpers/responses";
 
 const View = ({user}) => {
     const [groups, setGroups] = useState();
@@ -20,8 +21,7 @@ const View = ({user}) => {
             path: getGroupClassesUrlByUser(user)
         }).done(
             (resp) => {
-                const groupClasses = user.role !== USER_ROLES.ADMIN ? [resp.entity] : resp.entity._embedded.groupClasses;
-                const mappedGroups = groupClasses.map((group) => {
+                const mappedGroups = getGroupClasses(user, resp).map((group) => {
                     const {
                         name: groupName,
                         _embedded: {teacher: {name}},
@@ -39,8 +39,7 @@ const View = ({user}) => {
     useEffect(() => {
         fetchAndProcessGroupClasses();
     }, []);
-
-    useEffect(() => {
+    const fetchSubjects = () => {
         if (selectedGroup) {
             const url = selectedGroup.object._links.subjects.href.split("8080")[1];
             client({method: 'GET', path: url}).done(
@@ -61,7 +60,12 @@ const View = ({user}) => {
                     setSelectedSubject(mappedSubjects[0]);
                 });
         }
+    };
+
+    useEffect(() => {
+        fetchSubjects()
     }, [selectedGroup])
+
 
     useEffect(() => {
         if (selectedSubject) {
@@ -108,11 +112,7 @@ const View = ({user}) => {
         }).done(() => {
             setStudentsMarks()
             setStudentsMarksLoading(true);
-            setSelectedSubject();
-            setSubjects();
-            setSelectedGroup();
-            setGroups();
-            fetchAndProcessGroupClasses();
+            fetchSubjects();
         })
     }
 
