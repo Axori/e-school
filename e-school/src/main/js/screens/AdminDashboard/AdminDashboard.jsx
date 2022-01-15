@@ -27,16 +27,14 @@ const AdminDashboard = () => {
                 <table className="table">
                     <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Group name</th>
                         <th scope="col">Teacher</th>
+                        <th scope="col">Group name</th>
                         <th scope="col">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     {groups.map(group => (
                         <tr key={group.name}>
-                            <th scope="row">1</th>
                             <td>{group._embedded.teacher.name}</td>
                             <td>{group.name}</td>
                             <td>
