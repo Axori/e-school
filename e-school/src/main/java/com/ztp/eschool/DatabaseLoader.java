@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 @Component
-@Profile("dev")
 public class DatabaseLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
